@@ -1,17 +1,19 @@
+import os
 import time
+
+import adafruit_ntp
+import adafruit_sht4x
 import board
 import neopixel
-import os
-import wifi
-import time
 import rtc
 import socketpool
-import adafruit_ntp
-import board
-import adafruit_sht4x
+import wifi
+
+from circuitpython_logger import Config
+from circuitpython_logger.i2c import Sensors
 
 wifi.radio.connect(
-    os.getenv("CIRCUITPY_WIFI_SSID"), os.getenv("CIRCUITPY_WIFI_PASSWORD")
+    os.getenv("WIFI_SSID"), os.getenv("WIFI_PASSWORD")
 )
 print(f"My IP address: {wifi.radio.ipv4_address}")
 
@@ -22,29 +24,34 @@ rtc.RTC().datetime = ntp.datetime
 
 pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
-i2c = board.STEMMA_I2C()
+i2c_bus = board.STEMMA_I2C()
+config = Config()
+sensors = Sensors(config, i2c_bus)
 
-sht = adafruit_sht4x.SHT4x(i2c)
+sht = adafruit_sht4x.SHT4x(i2c_bus)
 print("Found SHT4x with serial number", hex(sht.serial_number))
 
-sht.mode = adafruit_sht4x.Mode.NOHEAT_HIGHPRECISION
-# Can also set the mode to enable heater
-# sht.mode = adafruit_sht4x.Mode.LOWHEAT_100MS
-print("Current mode is: ", adafruit_sht4x.Mode.string[sht.mode])
-
+period = 10
+next_time = 0
 while True:
-    print(time.time())
-    pixel.fill((5, 0, 0))
-    time.sleep(0.5)
-    pixel.fill((0, 5, 0))
-    time.sleep(0.5)
-    pixel.fill((0, 0, 5))
-    time.sleep(0.5)
-    pixel.fill((0, 0, 0))
-    time.sleep(0.5)
+    monotonic_time = time.monotonic()
+    if monotonic_time >= next_time:
+        pixel.fill((0, 5, 5))
+        sensors.scan_devices()
 
-    temperature, relative_humidity = sht.measurements
-    print("Temperature: %0.1f C" % temperature)
-    print("Humidity: %0.1f %%" % relative_humidity)
-    print("")
-    time.sleep(1)
+        pixel.fill((0, 0, 5))
+        timestamp = time.time()
+        data = sensors.measure()
+        print("###", timestamp)
+        for entry in data:
+            tags = entry["tags"]
+            measurement_type = tags["type"]
+            unit = tags["unit"]
+            value = entry["fields"]["value"]
+            location_name = config.location_name
+            print(f"{location_name}/{measurement_type}: {value} {unit}")
+        print()
+        next_time = monotonic_time + period
+
+        pixel.fill((0, 5, 0))
+    time.sleep(0.1)

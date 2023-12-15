@@ -21,6 +21,7 @@ if __name__ == "__main__":
         "adafruit-circuitpython-ntp",
         "adafruit-circuitpython-adafruitio",
         "adafruit-circuitpython-sht4x",
+        "adafruit-circuitpython-bmp3xx",
         "adafruit-circuitpython-bme680",
         "adafruit-circuitpython-neopixel",
     ]
