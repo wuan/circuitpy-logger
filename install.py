@@ -20,6 +20,8 @@ if __name__ == "__main__":
         "adafruit-circuitpython-requests",
         "adafruit-circuitpython-ntp",
         "adafruit-circuitpython-adafruitio",
+        "adafruit-circuitpython-scd4x",
+        "adafruit-circuitpython-sgp40",
         "adafruit-circuitpython-sht4x",
         "adafruit-circuitpython-bmp3xx",
         "adafruit-circuitpython-bme680",

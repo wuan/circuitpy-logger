@@ -22,13 +22,15 @@ classifiers = [
     'Programming Language :: Python :: 3.9',
 ]
 dependencies = [
-        "adafruit-circuitpython-requests",
-        "adafruit-circuitpython-ntp",
-        "adafruit-circuitpython-adafruitio",
-        "adafruit-circuitpython-sht4x",
-        "adafruit-circuitpython-bmp3xx",
-        "adafruit-circuitpython-bme680",
-        "adafruit-circuitpython-neopixel",
+    "adafruit-circuitpython-requests",
+    "adafruit-circuitpython-ntp",
+    "adafruit-circuitpython-adafruitio",
+    "adafruit-circuitpython-scd4x",
+    "adafruit-circuitpython-sgp40",
+    "adafruit-circuitpython-sht4x",
+    "adafruit-circuitpython-bmp3xx",
+    "adafruit-circuitpython-bme680",
+    "adafruit-circuitpython-neopixel",
 ]
 
 [project.optional-dependencies]

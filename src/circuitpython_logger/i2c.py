@@ -4,6 +4,8 @@ from . import DataBuilder, Config
 from .calc import TemperatureCalc, PressureCalc
 from .measurements import Measurements
 from .sensor.bmp3xx_sensor import BMP3xxSensor
+from .sensor.scd4x_sensor import SCD4xSensor
+from .sensor.sgp40_sensor import SGP40Sensor
 from .sensor.sht4x_sensor import Sht4xSensor
 
 
@@ -21,9 +23,12 @@ def scan(i2c_bus: I2C):
 
 class Sensors:
     sensor_map = {
+        SCD4xSensor.name: lambda i2c_bus, _: SCD4xSensor(i2c_bus),
+        SGP40Sensor.name: lambda i2c_bus, _: SGP40Sensor(i2c_bus),
         Sht4xSensor.name: lambda i2c_bus, _: Sht4xSensor(i2c_bus, TemperatureCalc()),
         BMP3xxSensor.name: lambda i2c_bus, config: BMP3xxSensor(i2c_bus, config, PressureCalc())
     }
+
 
     def __init__(self, config: Config, i2c_bus: I2C, device_map: dict = None):
         self.config = config
@@ -32,6 +37,8 @@ class Sensors:
 
         self.device_map = {
             68: Sht4xSensor.name,
+            89: SCD4xSensor.name,
+            98: SGP40Sensor.name,
             119: BMP3xxSensor.name,
         } if device_map is None else device_map
 
@@ -42,10 +49,10 @@ class Sensors:
 
         device_addresses = scan(self.i2c_bus)
         sensors_found = {self.device_map[device_address] for device_address in device_addresses if device_address in self.device_map}
-        unknown_sensors_found = {self.device_map[device_address] for device_address in device_addresses if device_address not in self.device_map}
+        unknown_sensors_found = {str(device_address) for device_address in device_addresses if device_address not in self.device_map}
 
         if unknown_sensors_found:
-            print("Could not found sensors for addresses:", ", ".join(unknown_sensors_found))
+            print("Could not find sensors for addresses:", ", ".join(unknown_sensors_found))
 
         if sensors_in_use != sensors_found:
 
