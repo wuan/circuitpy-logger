@@ -1,8 +1,8 @@
+import json
 import os
 import time
 
 import adafruit_ntp
-import adafruit_sht4x
 import board
 import neopixel
 import rtc
@@ -11,6 +11,7 @@ import wifi
 
 from circuitpython_logger import Config
 from circuitpython_logger.i2c import Sensors
+from circuitpython_logger.mqtt import MQTTClient
 
 wifi.radio.connect(
     os.getenv("WIFI_SSID"), os.getenv("WIFI_PASSWORD")
@@ -28,8 +29,9 @@ i2c_bus = board.STEMMA_I2C()
 config = Config()
 sensors = Sensors(config, i2c_bus)
 
-sht = adafruit_sht4x.SHT4x(i2c_bus)
-print("Found SHT4x with serial number", hex(sht.serial_number))
+mqtt = MQTTClient(pool, config)
+print("connecting to MQTT server")
+mqtt.connect()
 
 period = 10
 next_time = 0
@@ -44,12 +46,22 @@ while True:
         data = sensors.measure()
         print("###", timestamp)
         for entry in data:
+            timestamp = entry["time"]
+            value = entry["fields"]["value"]
+
             tags = entry["tags"]
             measurement_type = tags["type"]
             unit = tags["unit"]
-            value = entry["fields"]["value"]
-            location_name = config.location_name
-            print(f"{location_name}/{measurement_type}: {value} {unit}")
+            topic = f"{config.mqtt_prefix}/{measurement_type}"
+            print(f"{topic}: {value} {unit}")
+
+            mqtt.publish(topic, json.dumps({
+                "time": timestamp,
+                "value": value,
+                "unit": unit,
+                "calculated": tags["calculated"]
+            }))
+
         print()
         next_time = monotonic_time + period
 

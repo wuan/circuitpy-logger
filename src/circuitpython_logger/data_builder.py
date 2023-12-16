@@ -4,8 +4,7 @@ from . import Config
 
 
 class DataBuilder:
-    def __init__(self, configuration: Config):
-        self.location = configuration.location_name
+    def __init__(self):
         self.timestamp = time.time()
         self.data = []
 
@@ -19,7 +18,6 @@ class DataBuilder:
         return {
             "measurement": "data",
             "tags": {
-                "location": self.location,
                 "type": measurement_type,
                 "unit": measurement_unit,
                 "sensor": sensor,

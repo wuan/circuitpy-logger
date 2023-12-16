@@ -9,7 +9,11 @@ class Config:
 
     @property
     def mqtt_port(self):
-        return os.getenv("MQTT_PORT", "1883")
+        return int(os.getenv("MQTT_PORT", "1883"))
+
+    @property
+    def mqtt_prefix(self):
+        return os.getenv("MQTT_PREFIX", "sensors")
 
     @property
     def location_name(self):

@@ -71,7 +71,7 @@ class Sensors:
             self.sensors = sensors
 
     def measure(self):
-        data_builder = DataBuilder(self.config)
+        data_builder = DataBuilder()
         measurements = Measurements()
 
         for sensor in self.sensors:
