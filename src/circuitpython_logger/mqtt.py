@@ -46,7 +46,6 @@ class MQTTClient:
             socket_pool=pool,
             is_ssl=False,
         )
-        print(dir(pool))
 
         # Connect callback handlers to mqtt_client
         self.mqtt_client.on_connect = connect

@@ -30,18 +30,19 @@ config = Config()
 sensors = Sensors(config, i2c_bus)
 
 mqtt = MQTTClient(pool, config)
-print("connecting to MQTT server")
 mqtt.connect()
 
-period = 10
-next_time = 0
+period = 15
+last_time = 0
+last_second = 0
 while True:
     monotonic_time = time.monotonic()
-    if monotonic_time >= next_time:
-        pixel.fill((0, 5, 5))
+    seconds_difference = monotonic_time - last_time
+    if seconds_difference >= period:
+        pixel.fill((0, period, period))
         sensors.scan_devices()
 
-        pixel.fill((0, 0, 5))
+        pixel.fill((0, 0, period))
         timestamp = time.time()
         data = sensors.measure()
         print("###", timestamp)
@@ -52,18 +53,27 @@ while True:
             tags = entry["tags"]
             measurement_type = tags["type"]
             unit = tags["unit"]
+            sensor = tags["sensor"]
             topic = f"{config.mqtt_prefix}/{measurement_type}"
-            print(f"{topic}: {value} {unit}")
+            print(f"{topic}: {value} {unit} ({sensor})")
 
             mqtt.publish(topic, json.dumps({
                 "time": timestamp,
                 "value": value,
                 "unit": unit,
+                "sensor": sensor,
                 "calculated": tags["calculated"]
             }))
 
         print()
-        next_time = monotonic_time + period
+        last_time = monotonic_time
 
-        pixel.fill((0, 5, 0))
+        pixel.fill((0, period, 0))
+    else:
+        current_second = time.time()
+        if current_second - last_second > 0:
+            value = int(seconds_difference)
+            pixel.fill((value, period - value, 0))
+            sensors.measure()
+            last_second = current_second
     time.sleep(0.1)
