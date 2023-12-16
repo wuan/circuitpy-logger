@@ -1,4 +1,8 @@
-# circuitpython-sensors
+# circuitpy-logger
+
+A MQTT logger for various I2C sensor devices for CircuitPython
+
+## Example config
 
 ```
 WIFI_SSID = "SSDF"

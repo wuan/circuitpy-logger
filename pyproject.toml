@@ -37,7 +37,9 @@ dependencies = [
 tests = [
     'pytest-cov',
     'mock',
-    'assertpy'
+    'assertpy',
+    'tomlkit',
+    'pip-tools',
 ]
 [project.scripts]
 klimalogger = "klimalogger.script.klimalogger:main"

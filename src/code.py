@@ -32,6 +32,7 @@ sensors = Sensors(config, i2c_bus)
 mqtt = MQTTClient(pool, config)
 mqtt.connect()
 
+
 period = 15
 last_time = 0
 last_second = 0
