@@ -39,10 +39,30 @@ sensors = Sensors(config, i2c_bus)
 mqtt = MQTTClient(pool, config)
 mqtt.connect()
 
-
 period = 15
 last_time = 0
 last_second = 0
+
+
+def map_entry():
+    global timestamp, value, topic, data
+    timestamp = entry["time"]
+    value = entry["fields"]["value"]
+    tags = entry["tags"]
+    measurement_type = tags["type"]
+    unit = tags["unit"]
+    sensor = tags["sensor"]
+    topic = f"{config.mqtt_prefix}/{measurement_type}"
+    print(f"{topic}: {value} {unit} ({sensor})")
+    return (topic, {
+        "time": timestamp,
+        "value": value,
+        "unit": unit,
+        "sensor": sensor,
+        "calculated": tags["calculated"]
+    })
+
+
 while True:
     monotonic_time = time.monotonic()
     seconds_difference = monotonic_time - last_time
@@ -53,25 +73,9 @@ while True:
         pixel.fill((0, 0, period))
         timestamp = time.time()
         data = sensors.measure()
-        print("###", timestamp)
         for entry in data:
-            timestamp = entry["time"]
-            value = entry["fields"]["value"]
-
-            tags = entry["tags"]
-            measurement_type = tags["type"]
-            unit = tags["unit"]
-            sensor = tags["sensor"]
-            topic = f"{config.mqtt_prefix}/{measurement_type}"
-            print(f"{topic}: {value} {unit} ({sensor})")
-
-            mqtt.publish(topic, json.dumps({
-                "time": timestamp,
-                "value": value,
-                "unit": unit,
-                "sensor": sensor,
-                "calculated": tags["calculated"]
-            }))
+            topic, data = map_entry()
+            mqtt.publish(topic, json.dumps(data))
 
         print()
         last_time = monotonic_time
