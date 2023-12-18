@@ -16,9 +16,10 @@ class SGP40Sensor:
 
     def measure(self, data_builder: DataBuilder, measurements: Measurements) -> None:
         if measurements.temperature is not None and measurements.relative_humidity is not None:
-            voc_index = self.driver.measure_index(
-                temperature=measurements.temperature, relative_humidity=measurements.relative_humidity)
-            data_builder.add(self.name, "VOC index", "", float(voc_index))
+            data_builder.add(self.name, "VOC index", "", float(
+                self.driver.measure_index(
+                    temperature=measurements.temperature,
+                    relative_humidity=measurements.relative_humidity
+                )))
         else:
-            raw_gas = self.driver.raw
-            data_builder.add(self.name, "raw gas", "", float(raw_gas))
+            data_builder.add(self.name, "raw gas", "", float(self.driver.raw))
