@@ -19,7 +19,14 @@ wifi.radio.connect(
 print(f"My IP address: {wifi.radio.ipv4_address}")
 
 pool = socketpool.SocketPool(wifi.radio)
-ntp = adafruit_ntp.NTP(pool, tz_offset=0)
+
+ntp_server = os.getenv("NTP_SERVER")
+kwargs = {}
+if ntp_server:
+    print(f"using NTP Server: {ntp_server}")
+    kwargs = {"server": ntp_server}
+
+ntp = adafruit_ntp.NTP(pool, tz_offset=0, **kwargs)
 
 rtc.RTC().datetime = ntp.datetime
 

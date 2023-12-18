@@ -37,8 +37,8 @@ class Sensors:
 
         self.device_map = {
             68: Sht4xSensor.name,
-            89: SCD4xSensor.name,
-            98: SGP40Sensor.name,
+            89: SGP40Sensor.name,
+            98: SCD4xSensor.name,
             119: BMP3xxSensor.name,
         } if device_map is None else device_map
 
@@ -50,7 +50,6 @@ class Sensors:
         device_addresses = scan(self.i2c_bus)
         sensors_found = {self.device_map[device_address] for device_address in device_addresses if device_address in self.device_map}
         unknown_sensors_found = {str(device_address) for device_address in device_addresses if device_address not in self.device_map}
-
         if unknown_sensors_found:
             print("Could not find sensors for addresses:", ", ".join(unknown_sensors_found))
 
