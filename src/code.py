@@ -43,6 +43,11 @@ period = 15
 last_time = 0
 last_second = 0
 
+from microcontroller import watchdog as w
+from watchdog import WatchDogMode
+
+w.timeout=10
+w.mode = WatchDogMode.RAISE
 
 def map_entry():
     global timestamp, value, topic, data
@@ -89,3 +94,4 @@ while True:
             sensors.measure()
             last_second = current_second
     time.sleep(0.1)
+    w.feed()

@@ -1,14 +1,11 @@
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
-from adafruit_io.adafruit_io import IO_MQTT
 from socketpool import SocketPool
 
 from . import Config
 
+
 def connect(mqtt_client, userdata, flags, rc):
-    # This function will be called when the mqtt_client is connected
-    # successfully to the broker.
-    print("Connected to MQTT Broker!")
-    print("Flags: {0}\n RC: {1}".format(flags, rc))
+    print(f"Connected to MQTT Broker. flags {flags}, RC: {rc}")
 
 
 def disconnect(mqtt_client, userdata, rc):
@@ -36,13 +33,13 @@ def message(client, topic, message):
     print("New message on topic {0}: {1}".format(topic, message))
 
 
-
 class MQTTClient:
 
     def __init__(self, pool: SocketPool, config: Config):
         self.mqtt_client = MQTT.MQTT(
             broker=config.mqtt_host,
             port=config.mqtt_port,
+            client_id=config.location_name,
             socket_pool=pool,
             is_ssl=False,
         )
@@ -58,10 +55,17 @@ class MQTTClient:
 
     def publish(self, topic: str, message: str):
         try:
-            self.mqtt_client.publish(topic, message)
+            self.mqtt_client.publish(topic, message, qos=1, retain=False)
+        except OSError as e:
+            print("Exception:", type(e), e)
+            try:
+                reconnect = self.mqtt_client.reconnect(False)
+                print(f"Reconnecting to MQTT: {reconnect}")
+            except:
+                pass
         except MQTT.MMQTTException as e:
-            print("Exception:", e)
+            print("Exception:", type(e), e)
+
 
     def connect(self):
         self.mqtt_client.connect()
-
