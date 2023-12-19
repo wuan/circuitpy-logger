@@ -46,11 +46,11 @@ last_second = 0
 from microcontroller import watchdog as w
 from watchdog import WatchDogMode
 
-w.timeout=10
+w.timeout = 10
 w.mode = WatchDogMode.RAISE
 
-def map_entry():
-    global timestamp, value, topic, data
+
+def map_entry(entry):
     timestamp = entry["time"]
     value = entry["fields"]["value"]
     tags = entry["tags"]
@@ -79,7 +79,7 @@ while True:
         timestamp = time.time()
         data = sensors.measure()
         for entry in data:
-            topic, data = map_entry()
+            topic, data = map_entry(entry)
             mqtt.publish(topic, json.dumps(data))
 
         print()
