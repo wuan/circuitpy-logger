@@ -1,7 +1,5 @@
 import time
 
-from . import Config
-
 
 class DataBuilder:
     def __init__(self):
@@ -28,3 +26,21 @@ class DataBuilder:
                 "value": measurement_value
             }
         }
+
+
+def map_entry(mqtt_prefix, entry):
+    timestamp = entry["time"]
+    value = entry["fields"]["value"]
+    tags = entry["tags"]
+    measurement_type = tags["type"]
+    unit = tags["unit"]
+    sensor = tags["sensor"]
+    topic = f"{mqtt_prefix}/{measurement_type}"
+    print(f"{topic}: {value} {unit} ({sensor})")
+    return (topic, {
+        "time": timestamp,
+        "value": value,
+        "unit": unit,
+        "sensor": sensor,
+        "calculated": tags["calculated"]
+    })

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import os.path
+import pathlib
 import shutil
 from collections import deque
 
@@ -18,6 +19,7 @@ if __name__ == "__main__":
 
     pypi_dependencies = [
         "adafruit-circuitpython-requests",
+        "adafruit-circuitpython-minimqtt",
         "adafruit-circuitpython-ntp",
         "adafruit-circuitpython-adafruitio",
         "adafruit-circuitpython-scd4x",
@@ -59,3 +61,9 @@ if __name__ == "__main__":
                 module_target_path = os.path.join(target_path, entry["path"])
                 shutil.rmtree(module_target_path, ignore_errors=True)
                 shutil.copytree(module_base_path, module_target_path)
+
+    src_path = pathlib.Path(__file__).parent.resolve() / "src"
+    shutil.copyfile(src_path / "code.py", os.path.join(target_path, "code.py"))
+    shutil.rmtree(os.path.join(target_path, "circuitpython_logger"), ignore_errors=True)
+    shutil.copytree(src_path / "circuitpython_logger", os.path.join(target_path, "circuitpython_logger"))
+

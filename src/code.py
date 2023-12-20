@@ -9,9 +9,13 @@ import rtc
 import socketpool
 import wifi
 
-from circuitpython_logger import Config
+from circuitpython_logger import Config, DataBuilder
 from circuitpython_logger.i2c import Sensors
 from circuitpython_logger.mqtt import MQTTClient
+from circuitpython_logger.data_builder import map_entry
+
+start_time = time.monotonic_ns()
+
 
 wifi.radio.connect(
     os.getenv("WIFI_SSID"), os.getenv("WIFI_PASSWORD")
@@ -49,23 +53,12 @@ from watchdog import WatchDogMode
 w.timeout = 10
 w.mode = WatchDogMode.RAISE
 
+data_builder = DataBuilder()
+end_time = time.monotonic_ns()
+data_builder.add("boot", "time", "ms", (end_time - start_time) / 1e6)
+topic, data = map_entry(config.mqtt_prefix, data_builder.data[0])
+mqtt.publish(topic, json.dumps(data))
 
-def map_entry(entry):
-    timestamp = entry["time"]
-    value = entry["fields"]["value"]
-    tags = entry["tags"]
-    measurement_type = tags["type"]
-    unit = tags["unit"]
-    sensor = tags["sensor"]
-    topic = f"{config.mqtt_prefix}/{measurement_type}"
-    print(f"{topic}: {value} {unit} ({sensor})")
-    return (topic, {
-        "time": timestamp,
-        "value": value,
-        "unit": unit,
-        "sensor": sensor,
-        "calculated": tags["calculated"]
-    })
 
 
 while True:
@@ -79,7 +72,7 @@ while True:
         timestamp = time.time()
         data = sensors.measure()
         for entry in data:
-            topic, data = map_entry(entry)
+            topic, data = map_entry(config.mqtt_prefix, entry)
             mqtt.publish(topic, json.dumps(data))
 
         print()
