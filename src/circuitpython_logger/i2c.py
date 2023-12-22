@@ -5,6 +5,7 @@ from board import I2C
 from . import DataBuilder, Config
 from .calc import TemperatureCalc, PressureCalc
 from .measurements import Measurements
+from .sensor.bme680_sensor import BME680Sensor
 from .sensor.bmp3xx_sensor import BMP3xxSensor
 from .sensor.scd4x_sensor import SCD4xSensor
 from .sensor.sgp40_sensor import SGP40Sensor
@@ -28,9 +29,9 @@ class Sensors:
         SCD4xSensor.name: lambda i2c_bus, _: SCD4xSensor(i2c_bus),
         SGP40Sensor.name: lambda i2c_bus, _: SGP40Sensor(i2c_bus),
         Sht4xSensor.name: lambda i2c_bus, _: Sht4xSensor(i2c_bus, TemperatureCalc()),
-        BMP3xxSensor.name: lambda i2c_bus, config: BMP3xxSensor(i2c_bus, config, PressureCalc())
+        BMP3xxSensor.name: lambda i2c_bus, config: BMP3xxSensor(i2c_bus, config, PressureCalc()),
+        BME680Sensor.name: lambda i2c_bus, config: BME680Sensor(i2c_bus, config, TemperatureCalc(), PressureCalc()),
     }
-
 
     def __init__(self, config: Config, i2c_bus: I2C, device_map: dict = None):
         self.config = config
@@ -50,8 +51,10 @@ class Sensors:
         sensors_in_use = {sensor.name for sensor in self.sensors}
 
         device_addresses = scan(self.i2c_bus)
-        sensors_found = {self.device_map[device_address] for device_address in device_addresses if device_address in self.device_map}
-        unknown_sensors_found = {str(device_address) for device_address in device_addresses if device_address not in self.device_map}
+        sensors_found = {self.device_map[device_address] for device_address in device_addresses if
+                         device_address in self.device_map}
+        unknown_sensors_found = {str(device_address) for device_address in device_addresses if
+                                 device_address not in self.device_map}
         if unknown_sensors_found:
             print("Could not find sensors for addresses:", ", ".join(unknown_sensors_found))
 
@@ -79,6 +82,6 @@ class Sensors:
             start_time = time.monotonic_ns()
             sensor.measure(data_builder, measurements)
             end_time = time.monotonic_ns()
-            data_builder.add(sensor.name, "time", "ms", (end_time - start_time)/1e6)
+            data_builder.add(sensor.name, "time", "ms", (end_time - start_time) / 1e6)
 
         return data_builder.data

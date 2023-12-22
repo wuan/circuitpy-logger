@@ -10,12 +10,11 @@ import socketpool
 import wifi
 
 from circuitpython_logger import Config, DataBuilder
+from circuitpython_logger.data_builder import map_entry
 from circuitpython_logger.i2c import Sensors
 from circuitpython_logger.mqtt import MQTTClient
-from circuitpython_logger.data_builder import map_entry
 
 start_time = time.monotonic_ns()
-
 
 wifi.radio.connect(
     os.getenv("WIFI_SSID"), os.getenv("WIFI_PASSWORD")
@@ -50,8 +49,8 @@ last_second = 0
 from microcontroller import watchdog as w
 from watchdog import WatchDogMode
 
-w.timeout = 10
-w.mode = WatchDogMode.RAISE
+w.timeout = 60
+w.mode = WatchDogMode.RESET
 
 data_builder = DataBuilder()
 end_time = time.monotonic_ns()
@@ -59,9 +58,8 @@ data_builder.add("boot", "time", "ms", (end_time - start_time) / 1e6)
 topic, data = map_entry(config.mqtt_prefix, data_builder.data[0])
 mqtt.publish(topic, json.dumps(data))
 
-
-
 while True:
+    w.feed()
     monotonic_time = time.monotonic()
     seconds_difference = monotonic_time - last_time
     if seconds_difference >= period:
