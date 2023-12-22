@@ -49,7 +49,7 @@ last_second = 0
 from microcontroller import watchdog as w
 from watchdog import WatchDogMode
 
-w.timeout = 60
+w.timeout = 30
 w.mode = WatchDogMode.RESET
 
 data_builder = DataBuilder()
