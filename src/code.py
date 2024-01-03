@@ -2,10 +2,8 @@ import json
 import os
 import time
 
-import adafruit_ntp
 import board
 import neopixel
-import rtc
 import socketpool
 import wifi
 
@@ -13,6 +11,7 @@ from circuitpython_logger import Config, DataBuilder
 from circuitpython_logger.data_builder import map_entry
 from circuitpython_logger.i2c import Sensors
 from circuitpython_logger.mqtt import MQTTClient
+from circuitpython_logger.ntp import Ntp
 
 start_time = time.monotonic_ns()
 
@@ -23,15 +22,8 @@ print(f"My IP address: {wifi.radio.ipv4_address}")
 
 pool = socketpool.SocketPool(wifi.radio)
 
-ntp_server = os.getenv("NTP_SERVER")
-kwargs = {}
-if ntp_server:
-    print(f"using NTP Server: {ntp_server}")
-    kwargs = {"server": ntp_server}
-
-ntp = adafruit_ntp.NTP(pool, tz_offset=0, **kwargs)
-
-rtc.RTC().datetime = ntp.datetime
+ntp = Ntp(pool)
+ntp.update_time()
 
 pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
@@ -43,6 +35,8 @@ mqtt = MQTTClient(pool, config)
 mqtt.connect()
 
 period = 15
+time_sync_period = 60 * 60
+last_time_sync = time.monotonic()
 last_time = 0
 last_second = 0
 
@@ -84,5 +78,9 @@ while True:
             pixel.fill((value, period - value, 0))
             sensors.measure()
             last_second = current_second
+
+    if monotonic_time - last_time_sync > time_sync_period:
+        last_time_sync = monotonic_time
+        ntp.update_time()
+
     time.sleep(0.1)
-    w.feed()

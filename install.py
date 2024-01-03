@@ -5,10 +5,14 @@ import pathlib
 import shutil
 from collections import deque
 
-base_path = os.path.expanduser("~/Downloads/")
+base_path = "./"
 base_name = "adafruit-circuitpython-bundle"
-release_name = "20231210"
+release_name = "20231220"
 circuitpython_version = "8.x"
+
+#
+# curl -s https://api.github.com/repos/adafruit/Adafruit_CircuitPython_Bundle/releases/latest | grep browser_download_url | cut -d '"' -f 4
+#
 
 target_path = "/Volumes/CIRCUITPY"
 
@@ -64,6 +68,6 @@ if __name__ == "__main__":
 
     src_path = pathlib.Path(__file__).parent.resolve() / "src"
     shutil.copyfile(src_path / "code.py", os.path.join(target_path, "code.py"))
-    shutil.rmtree(os.path.join(target_path, "circuitpython_logger"), ignore_errors=True)
-    shutil.copytree(src_path / "circuitpython_logger", os.path.join(target_path, "circuitpython_logger"))
+    shutil.rmtree(os.path.join(target_path, "lib", "circuitpython_logger"), ignore_errors=True)
+    shutil.copytree(src_path / "circuitpython_logger", os.path.join(target_path, "lib", "circuitpython_logger"))
 
