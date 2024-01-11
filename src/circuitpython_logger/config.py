@@ -32,5 +32,4 @@ class Config:
             for entry in entries:
                 address, name = entry.split("=")
                 device_map[int(address)] = name
-            print("device map:", device_map)
         return device_map

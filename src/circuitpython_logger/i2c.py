@@ -47,7 +47,6 @@ class Sensors:
         device_map = config.device_map
         if device_map:
             self.device_map.update(device_map)
-        print("i2c device_map", self.device_map)
 
         self.scan_devices()
 
