@@ -14,7 +14,6 @@ class BME680Sensor:
 
     def __init__(self, i2c_bus: busio.I2C, config: Config, temperature_calc: TemperatureCalc,
                  pressure_calc: PressureCalc):
-        log.info("init()")
         self.temperature_calc = temperature_calc
         self.pressure_calc = pressure_calc
         self.elevation = int(config.elevation)

@@ -33,7 +33,7 @@ class Sensors:
         BME680Sensor.name: lambda i2c_bus, config: BME680Sensor(i2c_bus, config, TemperatureCalc(), PressureCalc()),
     }
 
-    def __init__(self, config: Config, i2c_bus: I2C, device_map: dict = None):
+    def __init__(self, config: Config, i2c_bus: I2C):
         self.config = config
         self.i2c_bus = i2c_bus
         self.sensors = []
@@ -43,7 +43,11 @@ class Sensors:
             89: SGP40Sensor.name,
             98: SCD4xSensor.name,
             119: BMP3xxSensor.name,
-        } if device_map is None else device_map
+        }
+        device_map = config.device_map
+        if device_map:
+            self.device_map.update(device_map)
+        print("i2c device_map", self.device_map)
 
         self.scan_devices()
 

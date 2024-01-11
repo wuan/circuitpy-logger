@@ -3,7 +3,6 @@ import os
 import time
 
 import board
-import neopixel
 import socketpool
 import wifi
 
@@ -12,39 +11,49 @@ from circuitpython_logger.data_builder import map_entry
 from circuitpython_logger.i2c import Sensors
 from circuitpython_logger.mqtt import MQTTClient
 from circuitpython_logger.ntp import Ntp
+from circuitpython_logger.pixel import Pixel
+
+
+def create_watchdog():
+    from microcontroller import watchdog as w
+    from watchdog import WatchDogMode
+    w.timeout = 30
+    w.mode = WatchDogMode.RESET
+    return w
+
+
+w = create_watchdog()
+period = 15
 
 start_time = time.monotonic_ns()
 
+print("connect to WLAN")
 wifi.radio.connect(
     os.getenv("WIFI_SSID"), os.getenv("WIFI_PASSWORD")
 )
-print(f"My IP address: {wifi.radio.ipv4_address}")
+print(f"IP address: {wifi.radio.ipv4_address}")
 
 pool = socketpool.SocketPool(wifi.radio)
 
+print("fetch network time")
 ntp = Ntp(pool)
 ntp.update_time()
 
-pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
+pixel = Pixel(period, period // 2)
 
 i2c_bus = board.STEMMA_I2C()
 config = Config()
 sensors = Sensors(config, i2c_bus)
 
+print("connect to MQTT")
 mqtt = MQTTClient(pool, config)
 mqtt.connect()
 
-period = 15
+print("start measurement")
 time_sync_period = 60 * 60
 last_time_sync = time.monotonic()
 last_time = 0
 last_second = 0
-
-from microcontroller import watchdog as w
-from watchdog import WatchDogMode
-
-w.timeout = 30
-w.mode = WatchDogMode.RESET
 
 data_builder = DataBuilder()
 end_time = time.monotonic_ns()
@@ -57,10 +66,10 @@ while True:
     monotonic_time = time.monotonic()
     seconds_difference = monotonic_time - last_time
     if seconds_difference >= period:
-        pixel.fill((0, period, period))
+        pixel.scan()
         sensors.scan_devices()
 
-        pixel.fill((0, 0, period))
+        pixel.measure()
         timestamp = time.time()
         data = sensors.measure()
         for entry in data:
@@ -69,13 +78,12 @@ while True:
 
         print()
         last_time = monotonic_time
-
-        pixel.fill((0, period, 0))
+        pixel.done()
     else:
         current_second = time.time()
         if current_second - last_second > 0:
             value = int(seconds_difference)
-            pixel.fill((value, period - value, 0))
+            pixel.progress(value)
             sensors.measure()
             last_second = current_second
 

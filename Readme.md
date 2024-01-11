@@ -11,3 +11,20 @@ MQTT_HOST="mqtt"
 MQTT_PREFIX="sensors/test"
 ELEVATION="530"
 ```
+
+By default the following sensors are mapped to their default I2C addresses:
+
+| I2C address | sensor name |
+|-------------|-------------|
+| 68          | SHT4x       |
+| 89          | SGP40       |
+| 98          | SCD4x       |
+| 119         | BMP3xx      |
+
+As the address to sensor mapping might not be unique there can be an override through the configuration:
+
+```
+DEVICE_MAP="119=BME680"
+```
+
+mapping the real address to one of the supported sensor names: `SHT4x`, `SGP40`, `SCD4x`, `BMP3xx`, `BME680`.

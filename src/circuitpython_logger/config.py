@@ -22,3 +22,15 @@ class Config:
     @property
     def elevation(self):
         return int(os.getenv("ELEVATION", "0"))
+
+    @property
+    def device_map(self):
+        device_map = os.getenv("DEVICE_MAP", None)
+        if device_map is not None:
+            entries = device_map.split(",")
+            device_map = {}
+            for entry in entries:
+                address, name = entry.split("=")
+                device_map[int(address)] = name
+            print("device map:", device_map)
+        return device_map
