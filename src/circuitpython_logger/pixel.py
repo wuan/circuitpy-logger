@@ -24,9 +24,7 @@ class Pixel:
         self.set_pixel((value, self.period - value, 0))
 
     def set_pixel(self, rgb):
-        original_rgb = rgb
         rgb = tuple([self.dimmer.dim(value) for value in rgb])
-        print(original_rgb, "->", rgb)
         self.pixel.fill(rgb)
 
 
