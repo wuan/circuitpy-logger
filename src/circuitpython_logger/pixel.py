@@ -20,6 +20,18 @@ class Pixel:
     def done(self):
         self.set_pixel((0, self.period, 0))
 
+    def wlan(self):
+        self.pixel.fill((10, 10, 0))
+
+    def ntp(self):
+        self.pixel.fill((10, 0, 10))
+
+    def sensors(self):
+        self.pixel.fill((0, 10, 10))
+
+    def mqtt(self):
+        self.pixel.fill((10, 10, 10))
+
     def progress(self, value):
         self.set_pixel((value, self.period - value, 0))
 

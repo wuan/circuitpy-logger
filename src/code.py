@@ -22,73 +22,85 @@ def create_watchdog():
     return w
 
 
-w = create_watchdog()
-period = 15
+try:
+    w = create_watchdog()
 
-start_time = time.monotonic_ns()
+    period = 15
+    pixel = Pixel(period, period // 2)
 
-print("connect to WLAN")
-wifi.radio.connect(
-    os.getenv("WIFI_SSID"), os.getenv("WIFI_PASSWORD")
-)
-print(f"IP address: {wifi.radio.ipv4_address}")
+    pixel.wlan()
+    start_time = time.monotonic_ns()
 
-pool = socketpool.SocketPool(wifi.radio)
+    print("connect to WLAN")
+    wifi.radio.connect(
+        os.getenv("WIFI_SSID"), os.getenv("WIFI_PASSWORD")
+    )
+    print(f"IP address: {wifi.radio.ipv4_address}")
 
-print("fetch network time")
-ntp = Ntp(pool)
-ntp.update_time()
+    pool = socketpool.SocketPool(wifi.radio)
 
-pixel = Pixel(period, period // 2)
+    pixel.ntp()
+    print("fetch network time")
+    ntp = Ntp(pool)
+    ntp.update_time()
 
-i2c_bus = board.STEMMA_I2C()
-config = Config()
-sensors = Sensors(config, i2c_bus)
+    pixel.sensors()
+    i2c_bus = board.STEMMA_I2C()
+    config = Config()
+    sensors = Sensors(config, i2c_bus)
 
-print("connect to MQTT")
-mqtt = MQTTClient(pool, config)
-mqtt.connect()
+    print("connect to MQTT")
+    pixel.mqtt()
+    i2c_bus = board.STEMMA_I2C()
+    mqtt = MQTTClient(pool, config)
+    mqtt.connect()
 
-print("start measurement")
-time_sync_period = 60 * 60
-last_time_sync = time.monotonic()
-last_time = 0
-last_second = 0
+    print("start measurement")
+    time_sync_period = 60 * 60
+    last_time_sync = time.monotonic()
+    last_time = 0
+    last_second = 0
 
-data_builder = DataBuilder()
-end_time = time.monotonic_ns()
-data_builder.add("boot", "time", "ms", (end_time - start_time) / 1e6)
-topic, data = map_entry(config.mqtt_prefix, data_builder.data[0])
-mqtt.publish(topic, json.dumps(data))
+    data_builder = DataBuilder()
+    end_time = time.monotonic_ns()
+    data_builder.add("boot", "time", "ms", (end_time - start_time) / 1e6)
+    topic, data = map_entry(config.mqtt_prefix, data_builder.data[0])
+    mqtt.publish(topic, json.dumps(data))
 
-while True:
-    w.feed()
-    monotonic_time = time.monotonic()
-    seconds_difference = monotonic_time - last_time
-    if seconds_difference >= period:
-        pixel.scan()
-        sensors.scan_devices()
+    while True:
+        w.feed()
+        monotonic_time = time.monotonic()
+        seconds_difference = monotonic_time - last_time
+        if seconds_difference >= period:
+            pixel.scan()
+            sensors.scan_devices()
 
-        pixel.measure()
-        timestamp = time.time()
-        data = sensors.measure()
-        for entry in data:
-            topic, data = map_entry(config.mqtt_prefix, entry)
-            mqtt.publish(topic, json.dumps(data))
+            pixel.measure()
+            timestamp = time.time()
+            data = sensors.measure()
+            for entry in data:
+                topic, data = map_entry(config.mqtt_prefix, entry)
+                mqtt.publish(topic, json.dumps(data))
 
-        print()
-        last_time = monotonic_time
-        pixel.done()
-    else:
-        current_second = time.time()
-        if current_second - last_second > 0:
-            value = int(seconds_difference)
-            pixel.progress(value)
-            sensors.measure()
-            last_second = current_second
+            print()
+            last_time = monotonic_time
+            pixel.done()
+        else:
+            current_second = time.time()
+            if current_second - last_second > 0:
+                value = int(seconds_difference)
+                pixel.progress(value)
+                sensors.measure()
+                last_second = current_second
 
-    if monotonic_time - last_time_sync > time_sync_period:
-        last_time_sync = monotonic_time
-        ntp.update_time()
+        if monotonic_time - last_time_sync > time_sync_period:
+            last_time_sync = monotonic_time
+            ntp.update_time()
 
-    time.sleep(0.1)
+        time.sleep(0.1)
+except KeyboardInterrupt:
+    raise
+except:
+    import supervisor
+
+    supervisor.reload()
