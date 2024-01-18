@@ -67,6 +67,8 @@ try:
     topic, data = map_entry(config.mqtt_prefix, data_builder.data[0])
     mqtt.publish(topic, json.dumps(data))
 
+    ignore_count = 1
+
     while True:
         w.feed()
         monotonic_time = time.monotonic()
@@ -78,9 +80,13 @@ try:
             pixel.measure()
             timestamp = time.time()
             data = sensors.measure()
-            for entry in data:
-                topic, data = map_entry(config.mqtt_prefix, entry)
-                mqtt.publish(topic, json.dumps(data))
+            if ignore_count == 0:
+                for entry in data:
+                    topic, data = map_entry(config.mqtt_prefix, entry)
+                    mqtt.publish(topic, json.dumps(data))
+            else:
+                print(f"skipping {ignore_count}")
+                ignore_count -= 1
 
             print()
             last_time = monotonic_time
