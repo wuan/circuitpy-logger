@@ -7,8 +7,8 @@ from collections import deque
 
 base_path = "./"
 base_name = "adafruit-circuitpython-bundle"
-release_name = "20240224"
-circuitpython_version = "8.x"
+release_name = "20241128"
+circuitpython_version = "9.x"
 
 #
 # curl -s https://api.github.com/repos/adafruit/Adafruit_CircuitPython_Bundle/releases/latest | grep browser_download_url | cut -d '"' -f 4
@@ -52,6 +52,7 @@ if __name__ == "__main__":
 
     print(dependencies)
 
+    os.makedirs(os.path.join(target_path, "lib"), exist_ok=True)
     bundle_base_path = os.path.join(base_path, f"{base_name}-{circuitpython_version}-mpy-{release_name}")
     for dependency in dependencies:
         if dependency in data:

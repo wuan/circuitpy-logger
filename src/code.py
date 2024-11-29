@@ -10,8 +10,8 @@ from circuitpython_logger import Config, DataBuilder
 from circuitpython_logger.data_builder import map_entry
 from circuitpython_logger.i2c import Sensors
 from circuitpython_logger.mqtt import MQTTClient
-from circuitpython_logger.ntp import Ntp
-from circuitpython_logger.pixel import Pixel
+from circuitpython_logger.device.ntp import Ntp
+from circuitpython_logger.device.pixel import Pixel
 
 
 def create_watchdog():
@@ -45,13 +45,12 @@ try:
     ntp.update_time()
 
     pixel.sensors()
-    i2c_bus = board.STEMMA_I2C()
     config = Config()
+    i2c_bus = board.STEMMA_I2C()
     sensors = Sensors(config, i2c_bus)
 
     print("connect to MQTT")
     pixel.mqtt()
-    i2c_bus = board.STEMMA_I2C()
     mqtt = MQTTClient(pool, config)
     mqtt.connect()
 
