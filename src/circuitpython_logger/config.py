@@ -5,7 +5,10 @@ class Config:
 
     @property
     def mqtt_host(self):
-        return os.getenv("MQTT_HOST")
+        mqtt_host = os.getenv("MQTT_HOST", None)
+        if mqtt_host is None:
+            print("MQTT_HOST:", mqtt_host)
+        return mqtt_host
 
     @property
     def mqtt_port(self):

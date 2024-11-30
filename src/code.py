@@ -44,15 +44,23 @@ try:
     ntp = Ntp(pool)
     ntp.update_time()
 
-    pixel.sensors()
     config = Config()
-    i2c_bus = board.STEMMA_I2C()
-    sensors = Sensors(config, i2c_bus)
 
-    print("connect to MQTT")
     pixel.mqtt()
-    mqtt = MQTTClient(pool, config)
-    mqtt.connect()
+    print("connect to MQTT")
+    try:
+        mqtt = MQTTClient(pool, config)
+        mqtt.connect()
+    except Exception as e:
+        print("mqtt setup failed:", e)
+
+    pixel.sensors()
+    print("setup I2C sensors")
+    try:
+        i2c_bus = board.STEMMA_I2C()
+    except Exception as e:
+        print("i2c setup failed:", e)
+    sensors = Sensors(config, i2c_bus)
 
     print("start measurement")
     time_sync_period = 60 * 60
@@ -95,7 +103,9 @@ try:
             if current_second - last_second > 0:
                 value = int(seconds_difference)
                 pixel.progress(value)
-                sensors.measure()
+                data = sensors.measure()
+                if len(data) == 0:
+                    print("WARNING: no measurements")
                 last_second = current_second
 
         if monotonic_time - last_time_sync > time_sync_period:

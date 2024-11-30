@@ -13,13 +13,16 @@ from .sensor.sht4x_sensor import Sht4xSensor
 
 
 def scan(i2c_bus: I2C):
-    locked = i2c_bus.try_lock()
+    lock_attempts = 0
+    while not i2c_bus.try_lock():
+        lock_attempts += 1
 
-    if locked:
-        devices = i2c_bus.scan()
-        i2c_bus.unlock()
-    else:
-        devices = []
+    if lock_attempts > 1:
+        print(f"scan() attempts: {lock_attempts}")
+
+    devices = i2c_bus.scan()
+
+    i2c_bus.unlock()
 
     return devices
 

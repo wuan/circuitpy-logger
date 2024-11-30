@@ -40,6 +40,7 @@ tests = [
     'assertpy',
     'tomlkit',
     'pip-tools',
+    'requests'
 ]
 [project.scripts]
 klimalogger = "klimalogger.script.klimalogger:main"
