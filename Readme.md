@@ -1,6 +1,6 @@
 # circuitpy-logger
 
-A MQTT logger for various I2C sensor devices for CircuitPython
+A sensor data logger for various I2C sensor devices for CircuitPython using MQTT.
 
 ## Supported sensors
 
