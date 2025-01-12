@@ -2,6 +2,25 @@
 
 A MQTT logger for various I2C sensor devices for CircuitPython
 
+## Supported sensors
+
+* SHT4x Temperature / Humidity
+* BME680 Temperature / Humidity / Pressure
+* BMP3xx Pressure
+* SCD4x CO2
+* SGP40 VOC index (air quality)
+
+more to come ...
+
+## Compatibility
+
+| CircuitPy version | Bundle release |
+| ------------------| -------------- |
+| 8.x               | 20240423       |
+| 9.x               | 20250111       |
+
+The installer `install.py` is configured to download and install the bundle release for CircuitPython 9.x by default.
+
 ## Example config
 
 ```
