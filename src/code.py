@@ -26,7 +26,7 @@ try:
     w = create_watchdog()
 
     period = 15
-    pixel = Pixel(period, period // 2)
+    pixel = Pixel(period, period / 5.0)
 
     pixel.wlan()
     start_time = time.monotonic_ns()
@@ -88,6 +88,7 @@ try:
             timestamp = time.time()
             data = sensors.measure()
             if ignore_count == 0:
+                pixel.mqtt()
                 for entry in data:
                     topic, data = map_entry(config.mqtt_prefix, entry)
                     mqtt.publish(topic, json.dumps(data))

@@ -15,22 +15,22 @@ more to come ...
 ## Compatibility
 
 | CircuitPy version | Bundle release |
-|-------------------| -------------- |
+|-------------------|----------------|
 | 8.x               | 20240423       |
-| 9.x (9.2.2)       | 20250111       |
+| 9.x (9.2.3)       | 20250123       |
 
 The installer `install.py` is configured to download and install the bundle release for CircuitPython 9.x by default.
 
 ## Color coding
 
-| Step             | Color       |
-|------------------|-------------|
-| WLAN connect     | yellow      |
-| NTP update       | magenta     |
-| MQTT connect     | white       |
-| Sensor detection | cyan        |
-| Sensor readout   | blue        | 
-| Operation        | green - red |
+| Step                  | Color       |
+|-----------------------|-------------|
+| WLAN connect          | yellow      |
+| NTP update            | magenta     |
+| MQTT connect / update | white       |
+| Sensor detection      | cyan        |
+| Sensor readout        | blue        | 
+| Operation             | green - red |
 
 ## Example config
 
