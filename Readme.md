@@ -21,6 +21,17 @@ more to come ...
 
 The installer `install.py` is configured to download and install the bundle release for CircuitPython 9.x by default.
 
+## Color coding
+
+| Step             | Color       |
+|------------------|-------------|
+| WLAN connect     | yellow      |
+| NTP update       | magenta     |
+| MQTT connect     | white       |
+| Sensor detection | cyan        |
+| Sensor readout   | blue        | 
+| Operation        | green - red |
+
 ## Example config
 
 ```
