@@ -80,8 +80,9 @@ class Sensors:
 
             self.sensors = sensors
 
-    def measure(self):
-        data_builder = DataBuilder()
+    def measure(self, data_builder = None):
+        if data_builder is None:
+            data_builder = DataBuilder()
         measurements = Measurements()
 
         for sensor in self.sensors:

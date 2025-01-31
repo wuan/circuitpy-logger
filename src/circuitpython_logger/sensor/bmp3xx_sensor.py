@@ -16,6 +16,8 @@ class BMP3xxSensor:
         self.elevation = config.elevation
 
         self.driver = adafruit_bmp3xx.BMP3XX_I2C(i2c_bus)
+        self.driver.pressure_oversampling = 8
+        self.driver.temperature_oversampling = 2
 
     def measure(self, data_builder: DataBuilder, measurements: Measurements) -> None:
         temperature = self.driver.temperature

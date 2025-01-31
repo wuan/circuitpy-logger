@@ -3,15 +3,16 @@ import os
 import time
 
 import board
+import microcontroller
 import socketpool
 import wifi
 
 from circuitpython_logger import Config, DataBuilder
 from circuitpython_logger.data_builder import map_entry
-from circuitpython_logger.i2c import Sensors
-from circuitpython_logger.mqtt import MQTTClient
 from circuitpython_logger.device.ntp import Ntp
 from circuitpython_logger.device.pixel import Pixel
+from circuitpython_logger.i2c import Sensors
+from circuitpython_logger.mqtt import MQTTClient
 
 
 def create_watchdog():
@@ -77,7 +78,9 @@ try:
     ignore_count = 1
 
     while True:
-        w.feed()
+        if wifi.radio.connected:
+            w.feed()
+
         monotonic_time = time.monotonic()
         seconds_difference = monotonic_time - last_time
         if seconds_difference >= period:
@@ -86,7 +89,14 @@ try:
 
             pixel.measure()
             timestamp = time.time()
-            data = sensors.measure()
+
+            data_builder = DataBuilder()
+            api_info = wifi.radio.ap_info
+            data_builder.add("wifi", "rssi", None, api_info.rssi)
+            data_builder.add("wifi", "channel", None, api_info.channel)
+            data_builder.add("cpu", "system ", "°C", microcontroller.cpu.temperature)
+            data = sensors.measure(data_builder)
+
             if ignore_count == 0:
                 pixel.mqtt()
                 for entry in data:
@@ -113,7 +123,7 @@ try:
             last_time_sync = monotonic_time
             ntp.update_time()
 
-        time.sleep(0.1)
+        time.sleep(0.2)
 except KeyboardInterrupt:
     raise
 except:
