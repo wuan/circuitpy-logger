@@ -63,7 +63,7 @@ try:
     config = Config()
 
     pixel.mqtt()
-    print("connect to MQTT")
+    print("Create MQTT client")
     try:
         mqtt = MQTTClient(pool, config)
     except Exception as e:

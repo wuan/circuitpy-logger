@@ -15,9 +15,9 @@ more to come ...
 ## Compatibility
 
 | CircuitPy version | Bundle release |
-|-------------------|----------------|
-| 8.x               | 20240423       |
-| 9.x (9.2.4)       | 20250123       |
+|-------------------|---------------|
+| 8.x               | 20240423      |
+| 9.x (9.2.4)       | 20250201      |
 
 The installer `install.py` is configured to download and install the bundle release for CircuitPython 9.x by default.
 
