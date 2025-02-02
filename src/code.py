@@ -23,6 +23,25 @@ def create_watchdog():
     return w
 
 
+def wifi_connect(wifi):
+    print("connect to WLAN")
+    try:
+        wifi.radio.connect(
+            os.getenv("WIFI_SSID"), os.getenv("WIFI_PASSWORD")
+        )
+        print(f"IP address: {wifi.radio.ipv4_address}")
+    except Exception as e:
+        print("wifi_connect() failed:", e)
+
+
+def mqtt_connect(mqtt):
+    print("connect to MQTT")
+    try:
+        mqtt.connect()
+    except Exception as e:
+        print("mqtt reconnect failed:", e)
+
+
 try:
     w = create_watchdog()
 
@@ -32,11 +51,7 @@ try:
     pixel.wlan()
     start_time = time.monotonic_ns()
 
-    print("connect to WLAN")
-    wifi.radio.connect(
-        os.getenv("WIFI_SSID"), os.getenv("WIFI_PASSWORD")
-    )
-    print(f"IP address: {wifi.radio.ipv4_address}")
+    wifi_connect(wifi)
 
     pool = socketpool.SocketPool(wifi.radio)
 
@@ -51,9 +66,10 @@ try:
     print("connect to MQTT")
     try:
         mqtt = MQTTClient(pool, config)
-        mqtt.connect()
     except Exception as e:
         print("mqtt setup failed:", e)
+        microcontroller.reset()
+    mqtt_connect(mqtt)
 
     pixel.sensors()
     print("setup I2C sensors")
@@ -78,8 +94,17 @@ try:
     ignore_count = 1
 
     while True:
-        if wifi.radio.connected:
+        wifi_connected = wifi.radio.connected
+        mqtt_connected = mqtt.mqtt_client.is_connected()
+
+        if wifi_connected and mqtt_connected:
             w.feed()
+        else:
+            pixel.wlan()
+            if not wifi_connected:
+                wifi_connect(wifi)
+            if not mqtt_connected:
+                mqtt_connect(mqtt)
 
         monotonic_time = time.monotonic()
         seconds_difference = monotonic_time - last_time
@@ -123,7 +148,7 @@ try:
             last_time_sync = monotonic_time
             ntp.update_time()
 
-        time.sleep(0.2)
+        time.sleep(0.25)
 except KeyboardInterrupt:
     raise
 except:
