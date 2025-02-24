@@ -7,7 +7,7 @@ from collections import deque
 
 base_path = "./"
 base_name = "adafruit-circuitpython-bundle"
-release_date = "20250206"
+release_date = "20250224"
 circuitpython_version = "9.x"
 
 #
@@ -61,12 +61,15 @@ if __name__ == "__main__":
         "adafruit-circuitpython-minimqtt",
         "adafruit-circuitpython-ntp",
         "adafruit-circuitpython-adafruitio",
+        "adafruit-circuitpython-neopixel",
         "adafruit-circuitpython-scd4x",
         "adafruit-circuitpython-sgp40",
         "adafruit-circuitpython-sht4x",
         "adafruit-circuitpython-bmp3xx",
         "adafruit-circuitpython-bme680",
-        "adafruit-circuitpython-neopixel",
+        "adafruit-circuitpython-mmc56x3",
+        "adafruit-circuitpython-veml7700",
+        "adafruit-circuitpython-bh1750",
     ]
 
     pypi_map = {value["pypi_name"]: key for key, value in catalog_data.items()}

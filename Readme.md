@@ -9,15 +9,17 @@ A sensor data logger for various I2C sensor devices for CircuitPython using MQTT
 * BMP3xx Pressure
 * SCD4x CO2
 * SGP40 VOC index (air quality)
+* Light sensor (BH1750, VEML7700)
+* Magnetometer MMC56x3
 
 more to come ...
 
 ## Compatibility
 
 | CircuitPy version | Bundle release |
-|-------------------|---------------|
-| 8.x               | 20240423      |
-| 9.x (9.2.4)       | 20250206      |
+|-------------------|----------------|
+| 8.x               | 20240423       |
+| 9.x (9.2.4)       | 20250224       |
 
 The installer `install.py` is configured to download and install the bundle release for CircuitPython 9.x by default.
 
@@ -46,6 +48,9 @@ By default the following sensors are mapped to their default I2C addresses:
 
 | I2C address | sensor name |
 |-------------|-------------|
+| 16          | VEML7700    |
+| 35          | BH1750      |
+| 48          | MMC56x3     |
 | 68          | SHT4x       |
 | 89          | SGP40       |
 | 98          | SCD4x       |
@@ -57,15 +62,8 @@ As the address to sensor mapping might not be unique there can be an override th
 DEVICE_MAP="119=BME680"
 ```
 
-mapping the real address to one of the supported sensor names: `SHT4x`, `SGP40`, `SCD4x`, `BMP3xx`, `BME680`.
+mapping the real address to one of the supported sensor names: `SHT4x`, `SGP40`, `SCD4x`, `BMP3xx`, `BME680`, ...
 
 ## Installation
 
-1. Download
-   * dependency map `adafruit-circuitpython-bundle-YYYYMMDD.json`
-   * module file archive `adafruit-circuitpython-bundle-8.x-mpy-YYYYMMDD.zip` 
-
-   from https://github.com/adafruit/Adafruit_CircuitPython_Bundle/releases to the main folder.
-2. Extract the module file archive in place.
-3. Update the release name variable in `install.py`
-4. run `./install.py` which will copy all relevant dependencies and the sources to `/Volumes/CIRCUITPY`
+Run `./install.py` which will copy all relevant dependencies and the sources to `/Volumes/CIRCUITPY` when connecting a CircuitPython device.
