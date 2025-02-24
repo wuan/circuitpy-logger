@@ -28,4 +28,4 @@ class MMC56x3Sensor:
         data_builder.add(self.name, "magZ", "uT", float(mag_z))
 
         mag = math.sqrt(mag_x ** 2 + mag_y ** 2 + mag_z ** 2)
-        data_builder.add(self.name, "mag", "uT", float(mag))
+        data_builder.add(self.name, "mag", "uT", float(mag), is_calculated=True)
