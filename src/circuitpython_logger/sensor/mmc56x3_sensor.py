@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+import math
 
 import adafruit_mmc56x3
 import busio
@@ -25,3 +26,6 @@ class MMC56x3Sensor:
         data_builder.add(self.name, "magX", "uT", float(mag_x))
         data_builder.add(self.name, "magY", "uT", float(mag_y))
         data_builder.add(self.name, "magZ", "uT", float(mag_z))
+
+        mag = math.sqrt(mag_x ** 2 + mag_y ** 2 + mag_z ** 2)
+        data_builder.add(self.name, "mag", "uT", float(mag))
