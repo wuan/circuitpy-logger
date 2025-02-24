@@ -8,29 +8,31 @@ except NotImplementedError:
 class Pixel:
     def __init__(self, period: int, divider=1.0):
         self.period = period
+        self.divider = divider
+        self.default = int(divider)
         self.dimmer = Dimmer(divider)
         self.pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
     def scan(self):
-        self.set_pixel((0, self.period, self.period))
+        self.set_pixel((0, self.default, self.default))
 
     def measure(self):
-        self.set_pixel((0, 0, self.period))
+        self.set_pixel((0, 0, self.default))
 
     def done(self):
-        self.set_pixel((0, self.period, 0))
+        self.set_pixel((0, self.default, 0))
 
     def wlan(self):
-        self.pixel.fill((self.period, self.period, 0))
+        self.pixel.fill((self.default, self.default, 0))
 
     def ntp(self):
-        self.pixel.fill((self.period, 0, self.period))
+        self.pixel.fill((self.default, 0, self.default))
 
     def sensors(self):
-        self.pixel.fill((0, self.period, self.period))
+        self.pixel.fill((0, self.default, self.default))
 
     def mqtt(self):
-        self.pixel.fill((self.period, self.period, self.period))
+        self.pixel.fill((self.default, self.default, self.default))
 
     def progress(self, value):
         self.set_pixel((value, self.period - value, 0))

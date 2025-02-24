@@ -14,11 +14,8 @@ class MMC56x3Sensor:
 
     def __init__(self, i2c_bus: busio.I2C):
         self.driver = adafruit_mmc56x3.MMC5603(i2c_bus)
-        self.driver.data_rate = 10  # in Hz, from 1-255 or 1000
-        self.driver.continuous_mode = True
-
-    def __del__(self):
-        self.driver.stop_periodic_measurement()
+        # self.driver.data_rate = 10  # in Hz, from 1-255 or 1000
+        # self.driver.continuous_mode = True
 
     def measure(self, data_builder: DataBuilder, measurements: Measurements) -> None:
         mag_x, mag_y, mag_z = self.driver.magnetic
