@@ -7,7 +7,7 @@ from collections import deque
 
 base_path = "./"
 base_name = "adafruit-circuitpython-bundle"
-release_date = "20250224"
+release_date = "20250305"
 circuitpython_version = "9.x"
 
 #
