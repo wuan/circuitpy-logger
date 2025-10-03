@@ -19,9 +19,9 @@ more to come ...
 | CircuitPy version | Bundle release |
 |-------------------|----------------|
 | 8.x               | 20240423       |
-| 9.x (9.2.4)       | 20250224       |
+| 9.x (9.2.6)       | 20250224       |
 
-The installer `install.py` is configured to download and install the bundle release for CircuitPython 9.x by default.
+The installer `install.py` is configured to download and install the bundle release for CircuitPython 9.x by default. Current bundle releases can be found [here](https://github.com/adafruit/Adafruit_CircuitPython_Bundle/releases).
 
 ## Color coding
 
