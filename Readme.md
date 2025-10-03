@@ -20,6 +20,7 @@ more to come ...
 |-------------------|----------------|
 | 8.x               | 20240423       |
 | 9.x (9.2.6)       | 20251003       |
+| 10.x (10.0.0)     | 20251003       |
 
 The installer `install.py` is configured to download and install the bundle release for CircuitPython 9.x by default. Current bundle releases can be found [here](https://github.com/adafruit/Adafruit_CircuitPython_Bundle/releases).
 
