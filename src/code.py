@@ -119,7 +119,7 @@ try:
             api_info = wifi.radio.ap_info
             data_builder.add("wifi", "rssi", None, api_info.rssi)
             data_builder.add("wifi", "channel", None, api_info.channel)
-            data_builder.add("cpu", "system ", "°C", microcontroller.cpu.temperature)
+            data_builder.add("cpu", "system", "°C", microcontroller.cpu.temperature)
             data = sensors.measure(data_builder)
 
             if ignore_count == 0:
