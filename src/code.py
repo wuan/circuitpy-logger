@@ -73,11 +73,14 @@ try:
 
     pixel.sensors()
     print("setup I2C sensors")
-    try:
-        i2c_bus = board.STEMMA_I2C()
-    except Exception as e:
-        print("i2c setup failed:", e)
-    sensors = Sensors(config, i2c_bus)
+    def i2c_bus_factory():
+        try:
+            return board.STEMMA_I2C()
+        except Exception as e:
+            print("i2c setup failed:", e)
+            return None
+
+    sensors = Sensors(config, i2c_bus_factory)
 
     print("start measurement")
     time_sync_period = 60 * 60
@@ -140,8 +143,6 @@ try:
                 value = int(seconds_difference)
                 pixel.progress(value)
                 data = sensors.measure()
-                if len(data) == 0:
-                    print("WARNING: no measurements")
                 last_second = current_second
 
         if monotonic_time - last_time_sync > time_sync_period:

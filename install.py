@@ -7,8 +7,8 @@ from collections import deque
 
 base_path = "./"
 base_name = "adafruit-circuitpython-bundle"
-release_date = "20251003"
-circuitpython_version = "9.x"
+release_date = "20251010"
+circuitpython_version = "10.x"
 
 #
 # curl -s https://api.github.com/repos/adafruit/Adafruit_CircuitPython_Bundle/releases/latest | grep browser_download_url | cut -d '"' -f 4

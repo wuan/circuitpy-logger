@@ -15,7 +15,7 @@ from .sensor.sht4x_sensor import Sht4xSensor
 from .sensor.veml7700_sensor import VEML7700Sensor
 
 
-def scan(i2c_bus: I2C):
+def scan(i2c_bus: I2C) -> list[int]:
     lock_attempts = 0
     while not i2c_bus.try_lock():
         lock_attempts += 1
@@ -23,9 +23,10 @@ def scan(i2c_bus: I2C):
     if lock_attempts > 1:
         print(f"scan() attempts: {lock_attempts}")
 
-    devices = i2c_bus.scan()
-
-    i2c_bus.unlock()
+    try:
+        devices = i2c_bus.scan()
+    finally:
+        i2c_bus.unlock()
 
     return devices
 
@@ -42,9 +43,10 @@ class Sensors:
         BH1750Sensor.name: lambda i2c_bus, _: BH1750Sensor(i2c_bus),
     }
 
-    def __init__(self, config: Config, i2c_bus: I2C):
+    def __init__(self, config: Config, i2c_bus_factory):
         self.config = config
-        self.i2c_bus = i2c_bus
+        self.i2c_bus_factory = i2c_bus_factory
+        self.i2c_bus = None
         self.sensors = []
 
         self.device_map = {
@@ -65,7 +67,20 @@ class Sensors:
     def scan_devices(self):
         sensors_in_use = {sensor.name for sensor in self.sensors}
 
-        device_addresses = scan(self.i2c_bus)
+        if self.i2c_bus is None:
+            self.i2c_bus = self.i2c_bus_factory()
+
+        if self.i2c_bus is None:
+            print("WARNING: no i2c devices found")
+            self.sensors = []
+            return
+
+        try:
+            device_addresses = scan(self.i2c_bus)
+        except Exception as e:
+            print(f"ERROR: i2c scan: {e}")
+            device_addresses = []
+
         sensors_found = {self.device_map[device_address] for device_address in device_addresses if
                          device_address in self.device_map}
         unknown_sensors_found = {str(device_address) for device_address in device_addresses if
@@ -79,7 +94,10 @@ class Sensors:
             for sensor_name in sensors_found.difference(sensors_in_use):
                 if sensor_name in self.sensor_map:
                     sensor = self.sensor_map[sensor_name]
-                    sensors.append(sensor(self.i2c_bus, self.config))
+                    try:
+                        sensors.append(sensor(self.i2c_bus, self.config))
+                    except Exception as e:
+                        print(f"ERR: init sensor {sensor_name}: {e}")
 
             sensors.sort(key=lambda sensor: sensor.priority)
 
@@ -95,9 +113,12 @@ class Sensors:
         measurements = Measurements()
 
         for sensor in self.sensors:
-            start_time = time.monotonic_ns()
-            sensor.measure(data_builder, measurements)
-            end_time = time.monotonic_ns()
-            data_builder.add(sensor.name, "time", "ms", (end_time - start_time) / 1e6)
+            try:
+                start_time = time.monotonic_ns()
+                sensor.measure(data_builder, measurements)
+                end_time = time.monotonic_ns()
+                data_builder.add(sensor.name, "time", "ms", (end_time - start_time) / 1e6)
+            except Exception as e:
+                print(f"ERROR: measure sensor {sensor.name}: {e}")
 
         return data_builder.data

@@ -20,9 +20,9 @@ more to come ...
 |-------------------|----------------|
 | 8.x               | 20240423       |
 | 9.x (9.2.6)       | 20251003       |
-| 10.x (10.0.0)     | 20251003       |
+| 10.x (10.0.1)     | 20251010       |
 
-The installer `install.py` is configured to download and install the bundle release for CircuitPython 9.x by default. Current bundle releases can be found [here](https://github.com/adafruit/Adafruit_CircuitPython_Bundle/releases).
+The installer `install.py` is configured to download and install the bundle release for CircuitPython 10.x by default. Current bundle releases can be found [here](https://github.com/adafruit/Adafruit_CircuitPython_Bundle/releases).
 
 ## Color coding
 
@@ -40,9 +40,9 @@ The installer `install.py` is configured to download and install the bundle rele
 ```
 WIFI_SSID = "SSDF"
 WIFI_PASSWORD = "XZCXCZXC"
-MQTT_HOST="mqtt"
-MQTT_PREFIX="sensors/test"
-ELEVATION="530"
+MQTT_HOST = "mqtt"
+MQTT_PREFIX = "sensors/test"
+ELEVATION = q"530"
 ```
 
 By default the following sensors are mapped to their default I2C addresses:
@@ -60,7 +60,7 @@ By default the following sensors are mapped to their default I2C addresses:
 As the address to sensor mapping might not be unique there can be an override through the configuration:
 
 ```
-DEVICE_MAP="119=BME680"
+DEVICE_MAP = "119=BME680"
 ```
 
 mapping the real address to one of the supported sensor names: `SHT4x`, `SGP40`, `SCD4x`, `BMP3xx`, `BME680`, ...
