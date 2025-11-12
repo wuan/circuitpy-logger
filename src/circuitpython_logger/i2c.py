@@ -13,6 +13,7 @@ from .sensor.scd4x_sensor import SCD4xSensor
 from .sensor.sgp40_sensor import SGP40Sensor
 from .sensor.sht4x_sensor import Sht4xSensor
 from .sensor.veml7700_sensor import VEML7700Sensor
+from .sensor.pm25_sensor import PM25Sensor
 
 
 def scan(i2c_bus: I2C) -> list[int]:
@@ -41,6 +42,7 @@ class Sensors:
         MMC56x3Sensor.name: lambda i2c_bus, _: MMC56x3Sensor(i2c_bus),
         VEML7700Sensor.name: lambda i2c_bus, _: VEML7700Sensor(i2c_bus),
         BH1750Sensor.name: lambda i2c_bus, _: BH1750Sensor(i2c_bus),
+        PM25Sensor.name: lambda i2c_bus, _: PM25Sensor(i2c_bus),
     }
 
     def __init__(self, config: Config, i2c_bus_factory):
@@ -51,6 +53,7 @@ class Sensors:
 
         self.device_map = {
             16: VEML7700Sensor.name,
+            18: PM25Sensor.name,
             35: BH1750Sensor.name,
             48: MMC56x3Sensor.name,
             68: Sht4xSensor.name,

@@ -68,3 +68,19 @@ mapping the real address to one of the supported sensor names: `SHT4x`, `SGP40`,
 ## Installation
 
 Run `./install.py` which will copy all relevant dependencies and the sources to `/Volumes/CIRCUITPY` when connecting a CircuitPython device.
+
+### Update Circuitpython
+
+Press and hold BOOT button and press reset to get into bootloader mode.
+
+Run
+
+```
+esptool write-flash -e 0 Downloads/adafruit-circuitpython-adafruit_qtpy_esp32s3_nopsram-en_US-10.0.3.bin
+```
+
+### Update dependencies
+
+```aiignore
+ circup install -r requirements_circ.txt
+```
