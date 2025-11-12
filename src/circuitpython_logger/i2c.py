@@ -14,6 +14,8 @@ from .sensor.sgp40_sensor import SGP40Sensor
 from .sensor.sht4x_sensor import Sht4xSensor
 from .sensor.veml7700_sensor import VEML7700Sensor
 from .sensor.pm25_sensor import PM25Sensor
+from .sensor.tsl2591_sensor import TSL2591Sensor
+from .sensor.dps310_sensor import DPS310Sensor
 
 
 def scan(i2c_bus: I2C) -> list[int]:
@@ -43,6 +45,9 @@ class Sensors:
         VEML7700Sensor.name: lambda i2c_bus, _: VEML7700Sensor(i2c_bus),
         BH1750Sensor.name: lambda i2c_bus, _: BH1750Sensor(i2c_bus),
         PM25Sensor.name: lambda i2c_bus, _: PM25Sensor(i2c_bus),
+        TSL2591Sensor.name: lambda i2c_bus, _: TSL2591Sensor(i2c_bus),
+        DPS310Sensor.name: lambda i2c_bus, config: DPS310Sensor(i2c_bus, config, PressureCalc()),
+
     }
 
     def __init__(self, config: Config, i2c_bus_factory):
@@ -55,6 +60,7 @@ class Sensors:
             16: VEML7700Sensor.name,
             18: PM25Sensor.name,
             35: BH1750Sensor.name,
+            41: TSL2591Sensor.name,
             48: MMC56x3Sensor.name,
             68: Sht4xSensor.name,
             89: SGP40Sensor.name,
