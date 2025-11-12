@@ -6,11 +6,12 @@ A sensor data logger for various I2C sensor devices for CircuitPython using MQTT
 
 * SHT4x Temperature / Humidity
 * BME680 Temperature / Humidity / Pressure
-* BMP3xx Pressure
+* Pressure Sensors (BMP3xx, DPS310)
 * SCD4x CO2
 * SGP40 VOC index (air quality)
-* Light sensor (BH1750, VEML7700)
+* Light sensors (BH1750, VEML7700, TSL2591)
 * Magnetometer MMC56x3
+* Air quality (PM2.5)
 
 more to come ...
 
@@ -67,7 +68,7 @@ mapping the real address to one of the supported sensor names: `SHT4x`, `SGP40`,
 
 ## Installation
 
-Run `./install.py` which will copy all relevant dependencies and the sources to `/Volumes/CIRCUITPY` when connecting a CircuitPython device.
+Connect a Circuitpython device so that `/Volumes/CIRCUITPY` is mounted.
 
 ### Update Circuitpython
 
@@ -76,11 +77,15 @@ Press and hold BOOT button and press reset to get into bootloader mode.
 Run
 
 ```
-esptool write-flash -e 0 Downloads/adafruit-circuitpython-adafruit_qtpy_esp32s3_nopsram-en_US-10.0.3.bin
+esptool write-flash -e 0 ~/Downloads/adafruit-circuitpython-adafruit_qtpy_esp32s2-en_US-10.0.3.bin
 ```
 
 ### Update dependencies
 
 ```aiignore
- circup install -r requirements_circ.txt
+circup install -r requirements_cpy.txt
 ```
+
+### Install software
+
+Run `./install.py` which will copy the sources
