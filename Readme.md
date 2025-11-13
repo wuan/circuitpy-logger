@@ -1,5 +1,8 @@
 # circuitpy-logger
 
+> [!WARNING] 
+> This project has been integrated into https://github.com/wuan/klimalogger and will be archived.
+
 A sensor data logger for various I2C sensor devices for CircuitPython using MQTT.
 
 ## Supported sensors
